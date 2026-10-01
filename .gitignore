@@ -1,0 +1,9 @@
+.env*
+!.env.example
+node_modules/
+dist/
+.pids/
+logs/
+*.log
+__pycache__/
+*.pyc

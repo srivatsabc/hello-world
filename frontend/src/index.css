@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+/* Date: October 1, 2026
+   Name: Sri
+   Desc: Dark scheme decided once at the app level; palette lives directly
+   as raw Tailwind utility classes in components/ui rather than themed CSS
+   custom properties, per this project's constraint of never writing a
+   literal double hyphen anywhere in the app (a CSS custom property's
+   syntax requires one, so it's the one approach frontend.md allows that
+   this project can actually use). */
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-zinc-950 text-zinc-100;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.25s ease-out;
+}
