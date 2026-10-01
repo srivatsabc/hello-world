@@ -9,10 +9,10 @@ from fastapi import APIRouter
 from app.models.calc import CalcRequest, CalcResponse
 from app.services import calc_service
 
-router = APIRouter(prefix="/calc", tags=["calc"])
+router = APIRouter(prefix="/calculation-management/calculations", tags=["calculation-management"])
 
 
-@router.post("/add", response_model=CalcResponse)
+@router.post("/addition", response_model=CalcResponse)
 def add(body: CalcRequest) -> CalcResponse:
     return CalcResponse(
         operation="add",
@@ -21,7 +21,7 @@ def add(body: CalcRequest) -> CalcResponse:
     )
 
 
-@router.post("/subtract", response_model=CalcResponse)
+@router.post("/subtraction", response_model=CalcResponse)
 def subtract(body: CalcRequest) -> CalcResponse:
     return CalcResponse(
         operation="subtract",

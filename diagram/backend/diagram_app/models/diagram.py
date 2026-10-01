@@ -3,7 +3,7 @@
 # Desc: Shapes of the diagram payload: zones (dotted boundaries), nodes
 #       (boxes), edges (arrows) and the step-by-step text for each flow.
 #       Fields stay snake_case. Coordinates are in the diagram's own
-#       1700 x 860 SVG space.
+#       1830 x 840 SVG space.
 from __future__ import annotations
 
 from typing import Literal
@@ -21,6 +21,7 @@ class Zone(BaseModel):
     h: int
     tag: str
     tag2: str | None = None
+    tag2_at: Literal["top", "bottom"] = "bottom"
     icon: str | None = None
     color: str
     flows: list[Flow]
@@ -33,7 +34,7 @@ class Node(BaseModel):
     w: int
     h: int
     title: str
-    sub: str | None = None
+    sub: str | list[str] | None = None
     icon: str
     flows: list[Flow]
     big: bool = False
@@ -47,7 +48,7 @@ class Edge(BaseModel):
     label: str | None = None
     lx: int | None = None
     ly: int | None = None
-    anchor: Literal["start", "middle"] | None = None
+    anchor: Literal["start", "middle", "end"] | None = None
 
 
 class Diagram(BaseModel):

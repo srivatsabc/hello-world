@@ -11,7 +11,7 @@ if lsof -ti:8440 -sTCP:LISTEN > /dev/null 2>&1; then
 fi
 (cd "$DIR/backend" && nohup conda run -n lab python -m diagram_app.main > "$DIR/logs/diagram.log" 2>&1 &)
 for _ in $(seq 1 30); do
-  curl -sf http://localhost:8440/api/v1/health > /dev/null 2>&1 && { echo "Diagram service ready: http://localhost:8440"; exit 0; }
+  curl -sf http://localhost:8440/api/v1/system-management/health-checks/status > /dev/null 2>&1 && { echo "Diagram service ready: http://localhost:8440"; exit 0; }
   sleep 1
 done
 echo "Diagram service did not become ready in time." >&2

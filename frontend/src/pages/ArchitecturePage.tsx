@@ -12,6 +12,8 @@ const DIAGRAM_URL = import.meta.env.VITE_DIAGRAM_URL ?? '/diagram/'
 export function ArchitecturePage() {
   const frameRef = useRef<HTMLIFrameElement>(null)
   const [height, setHeight] = useState(1400)
+  // A fresh query string per visit so the browser never reuses an old cached copy of the diagram page.
+  const [src] = useState(() => `${DIAGRAM_URL}?v=${Date.now()}`)
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
@@ -27,7 +29,7 @@ export function ArchitecturePage() {
   return (
     <iframe
       ref={frameRef}
-      src={DIAGRAM_URL}
+      src={src}
       title="Architecture diagram"
       style={{ height }}
       className="block w-full border-0"

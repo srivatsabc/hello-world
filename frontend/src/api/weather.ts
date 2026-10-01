@@ -5,5 +5,5 @@ import { request } from './client'
 // Name: Sri
 // Desc: Typed call to the backend's weather endpoint.
 export const weatherApi = {
-  get: (city: string) => request<WeatherResponse>(`/api/v1/weather?city=${encodeURIComponent(city)}`),
+  get: (city: string) => request<WeatherResponse>(`/api/v1/weather-management/weather-reports/current-report?city=${encodeURIComponent(city)}`),
 }

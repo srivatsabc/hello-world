@@ -5,14 +5,14 @@
 //       tag on the border), nodes (boxes) and edges (arrows with moving
 //       dots). 'conventional' is the direct API path, 'ai' is the agent
 //       path; anything on both lights up in either mode. Coordinates live in
-//       the SVG's own 1700 x 830 space. Colours and icons stay here, the
+//       the SVG's own 1830 x 840 space. Colours and icons stay here, the
 //       data comes from the API. This is the diagram frontend; the diagram
 //       backend serves it and the data.
 
 const COLORS = { conventional: '#a3e635', ai: '#a5b4fc', both: '#e4e4e7' }
 const BG = '#0b0b0d'
 
-// Filled from the diagram backend's API (GET api/v1/diagram, a relative path so it works
+// Filled from the diagram backend's API (GET api/v1/diagram-management/diagrams/architecture, a relative path so it works
 // both standalone and when embedded under a prefix) before the first render.
 let ZONES = []
 let NODES = []
@@ -69,17 +69,20 @@ function renderZone(z) {
 function renderZoneTags(z) {
   return `<g opacity="${active(z.flows) ? 1 : 0.2}" style="transition: opacity .3s">
     ${tag(z.x + 18, z.y, z.tag, z.color, z.icon)}
-    ${z.tag2 ? tag(z.x + z.w - 18, z.y + z.h, z.tag2, z.color, null, 'right') : ''}
+    ${z.tag2 ? tag(z.x + z.w - 18, z.tag2_at === 'top' ? z.y : z.y + z.h, z.tag2, z.color, null, 'right') : ''}
   </g>`
 }
 
+// Each dot starts hidden and only appears when its own animation begins: a dot with a delayed
+// start would otherwise sit at the SVG's top-left corner (0,0) until then, which showed up as a
+// small stray mark flashing in the corner of the diagram.
 function renderEdge(e) {
   const on = active(e.flows)
   const color = edgeColor(e.flows)
   const out = [0, 1.2]
-    .map((b) => `<circle r="5" fill="${color}"><animateMotion dur="2.4s" begin="${b}s" repeatCount="indefinite" path="${e.d}" /></circle>`)
+    .map((b) => `<circle r="5" fill="${color}" visibility="hidden"><set attributeName="visibility" to="visible" begin="${b}s" fill="freeze" /><animateMotion dur="2.4s" begin="${b}s" repeatCount="indefinite" path="${e.d}" /></circle>`)
     .join('')
-  const back = `<circle r="2.8" fill="${color}" opacity="0.55"><animateMotion dur="2.4s" begin="0.6s" repeatCount="indefinite" path="${e.d}" keyPoints="1;0" keyTimes="0;1" calcMode="linear" /></circle>`
+  const back = `<circle r="2.8" fill="${color}" opacity="0.55" visibility="hidden"><set attributeName="visibility" to="visible" begin="0.6s" fill="freeze" /><animateMotion dur="2.4s" begin="0.6s" repeatCount="indefinite" path="${e.d}" keyPoints="1;0" keyTimes="0;1" calcMode="linear" /></circle>`
   const label = e.label ? `<text x="${e.lx}" y="${e.ly}" text-anchor="${e.anchor}" fill="#a1a1aa" font-size="12" font-style="italic">${e.label}</text>` : ''
   return `<g opacity="${on ? 1 : 0.15}" style="transition: opacity .3s">
     <path d="${e.d}" fill="none" stroke="${on ? color : '#52525b'}" stroke-opacity="${on ? 0.55 : 1}" stroke-width="2" />
@@ -100,10 +103,12 @@ function renderNode(n) {
       <text x="${cx}" y="${titleY}" text-anchor="middle" fill="#f4f4f5" font-size="16" font-weight="600">${n.title}</text>
       <text x="${cx}" y="${titleY + 17}" text-anchor="middle" fill="#71717a" font-size="12">${n.sub}</text>`
   } else {
-    const ty = n.sub ? n.y + n.h / 2 - 2 : n.y + n.h / 2 + 5
+    const lines = Array.isArray(n.sub) ? n.sub : n.sub ? [n.sub] : []
+    // A list of lines (the API boxes list their paths) is laid out from the top; a single line stays centred.
+    const ty = Array.isArray(n.sub) ? n.y + 24 : n.sub ? n.y + n.h / 2 - 2 : n.y + n.h / 2 + 5
     inner = `${icon(n.icon, n.x + 10, n.y + n.h / 2 - 10, 20, c)}
       <text x="${n.x + 38}" y="${ty}" fill="#f4f4f5" font-size="14.5" font-weight="600" ${n.ghost ? 'font-style="italic"' : ''}>${n.title}</text>
-      ${n.sub ? `<text x="${n.x + 38}" y="${ty + 15}" fill="#71717a" font-size="11.5">${n.sub}</text>` : ''}`
+      ${lines.map((l, i) => `<text x="${n.x + 38}" y="${ty + 16 * (i + 1) - (Array.isArray(n.sub) ? 0 : 1)}" fill="#a1a1aa" font-size="11.5">${l}</text>`).join('')}`
   }
   const chips = n.chips
     ? ['conventional', 'ai']
@@ -134,6 +139,9 @@ function render() {
   svg.setAttribute('xmlns', NS)
   svg.innerHTML = ZONES.map(renderZone).join('') + EDGES.map(renderEdge).join('') + NODES.map(renderNode).join('') + ZONES.map(renderZoneTags).join('')
   document.querySelectorAll('[data-mode]').forEach((b) => b.classList.toggle('on', b.dataset.mode === mode))
+  // Shown only once there is a diagram to show, so an empty box never flashes first.
+  document.getElementById('diagram-card').hidden = false
+  document.getElementById('downloads').hidden = false
   renderSteps()
 }
 
@@ -145,10 +153,62 @@ document.querySelectorAll('[data-mode]').forEach((b) =>
   }),
 )
 
+// Builds a standalone copy of the current diagram: a background so it is not
+// transparent, an explicit size and font, and (optionally) without the moving
+// dots, which a still image cannot show.
+function exportSvgString({ animated }) {
+  const clone = document.getElementById('diagram').cloneNode(true)
+  clone.setAttribute('xmlns', NS)
+  clone.setAttribute('width', '1830')
+  clone.setAttribute('height', '840')
+  clone.setAttribute('font-family', 'system-ui, -apple-system, Segoe UI, sans-serif')
+  clone.removeAttribute('role')
+  if (!animated) clone.querySelectorAll('animateMotion').forEach((a) => a.parentElement.remove())
+  const bg = document.createElementNS(NS, 'rect')
+  bg.setAttribute('width', '1830')
+  bg.setAttribute('height', '840')
+  bg.setAttribute('fill', BG)
+  clone.insertBefore(bg, clone.firstChild)
+  return new XMLSerializer().serializeToString(clone)
+}
+
+function saveBlob(blob, filename) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+function downloadSvg() {
+  saveBlob(new Blob([exportSvgString({ animated: true })], { type: 'image/svg+xml' }), `architecture-${mode}.svg`)
+}
+
+// PNG is rendered at 2x so it stays sharp in slides and documents.
+function downloadPng() {
+  const svgUrl = URL.createObjectURL(new Blob([exportSvgString({ animated: false })], { type: 'image/svg+xml' }))
+  const img = new Image()
+  img.onload = () => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 3660
+    canvas.height = 1680
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+    URL.revokeObjectURL(svgUrl)
+    canvas.toBlob((blob) => saveBlob(blob, `architecture-${mode}.png`), 'image/png')
+  }
+  img.src = svgUrl
+}
+
+document.getElementById('dl-svg').addEventListener('click', downloadSvg)
+document.getElementById('dl-png').addEventListener('click', downloadPng)
+
 const startMode = new URLSearchParams(location.search).get('mode')
 if (['all', 'conventional', 'ai'].includes(startMode)) mode = startMode
 
-fetch('api/v1/diagram')
+fetch('api/v1/diagram-management/diagrams/architecture')
   .then((r) => r.json())
   .then((data) => {
     ZONES = data.zones

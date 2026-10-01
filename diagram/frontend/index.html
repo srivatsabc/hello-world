@@ -16,6 +16,9 @@
       .toggle { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
       button { font: inherit; font-size: 14px; font-weight: 500; padding: 6px 12px; border-radius: 8px; border: 1px solid #27272a; background: #18181b; color: #d4d4d8; cursor: pointer; }
       button.on { background: #a3e635; border-color: #a3e635; color: #09090b; }
+      [hidden] { display: none !important; }
+      .downloads { display: flex; justify-content: center; align-items: center; gap: 8px; margin: -4px 0 16px; font-size: 13px; color: #a1a1aa; }
+      .downloads button { font-size: 13px; padding: 4px 10px; }
       .card { background: rgba(24, 24, 27, 0.6); border: 1px solid #27272a; border-radius: 16px; padding: 20px; }
       .diagram { padding: 16px; }
       svg { width: 100%; height: auto; display: block; font-family: inherit; }
@@ -37,10 +40,15 @@
         <button data-mode="conventional">Conventional flow</button>
         <button data-mode="ai">AI flow</button>
       </div>
-      <div class="card diagram"><svg id="diagram" viewBox="0 0 1700 830" role="img" aria-label="End to end architecture diagram"></svg></div>
+      <div class="downloads" id="downloads" hidden>
+        <span>Download this view:</span>
+        <button id="dl-png" type="button">PNG</button>
+        <button id="dl-svg" type="button">SVG (animated)</button>
+      </div>
+      <div class="card diagram" id="diagram-card" hidden><svg id="diagram" viewBox="0 0 1830 840" role="img" aria-label="End to end architecture diagram"></svg></div>
       <div id="steps"></div>
     </main>
-    <script src="icons.js"></script>
-    <script src="diagram.js"></script>
+    <script src="icons.js?v=3"></script>
+    <script src="diagram.js?v=3"></script>
   </body>
 </html>

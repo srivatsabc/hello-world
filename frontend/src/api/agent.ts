@@ -6,7 +6,7 @@ import { request } from './client'
 // Desc: Typed call to the backend's LangChain agent endpoint.
 export const agentApi = {
   chat: (message: string) =>
-    request<AgentResponse>('/api/v1/agent/chat', {
+    request<AgentResponse>('/api/v1/agent-management/agents/chat', {
       method: 'POST',
       body: JSON.stringify({ message }),
     }),

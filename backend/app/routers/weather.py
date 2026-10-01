@@ -9,9 +9,9 @@ from fastapi import APIRouter, Query
 from app.models.weather import WeatherResponse
 from app.services import weather_service
 
-router = APIRouter(prefix="/weather", tags=["weather"])
+router = APIRouter(prefix="/weather-management/weather-reports", tags=["weather-management"])
 
 
-@router.get("", response_model=WeatherResponse)
+@router.get("/current-report", response_model=WeatherResponse)
 def get_weather(city: str = Query(..., description="City name, e.g. London")) -> WeatherResponse:
     return weather_service.get_current_weather(city)

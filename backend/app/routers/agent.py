@@ -9,7 +9,7 @@ from fastapi import APIRouter
 from app.models.agent import AgentRequest, AgentResponse
 from app.services.ai import agent_service
 
-router = APIRouter(prefix="/agent", tags=["agent"])
+router = APIRouter(prefix="/agent-management/agents", tags=["agent-management"])
 
 
 @router.post("/chat", response_model=AgentResponse)
