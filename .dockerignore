@@ -1,0 +1,10 @@
+.env*
+.git
+**/node_modules
+**/dist
+**/logs
+**/.pids
+**/__pycache__
+scripts
+email.txt
+diagram

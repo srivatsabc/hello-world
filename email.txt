@@ -1,0 +1,25 @@
+Subject: Check out the little app I built!
+
+Hi Nandu,
+
+I built a small app and wanted to show you what it does.
+
+It has two tabs.
+
+Conventional: a plain calculator and a weather box. You enter two numbers and hit Add or Subtract, or type a city and hit Get weather. Each button calls a microservice API directly (add, subtract, weather) and shows the result.
+
+AI: you just type in plain English, like "what's 41 minus 12?" or "what's the weather in Tokyo?", and hit Ask. That calls an API, which in turn calls an AI agent. The agent decides which tool to use (add, subtract or weather), calls the same microservice logic behind the scenes, and gives you the answer. It also shows the tool it used under "intermediate_results". I've restricted it to just those three things, so if you ask it to multiply or tell a joke, it politely says no.
+
+Why it's still a microservice
+
+The restaurant way: the screen is the dining room and the backend is the kitchen. They only pass orders through a window. The screen takes your request and shows the result, and the backend does the actual work. You could swap the dining room for a mobile app and the kitchen wouldn't care.
+
+The techy way: the frontend (React) and the backend (FastAPI) are separate processes that talk only over HTTP APIs. The backend is split into small single-purpose services (calc, weather), each exposed as its own API.
+
+Agents are microservices too. The agent is just another API (/agent/chat) that sits on top of the ones we already built. On its own it can only think and talk. To actually do anything it needs hands and legs, and those are tools. Each tool is a thin wrapper that calls the same add, subtract and weather logic the normal APIs use. So the agent doesn't re-implement anything. It reasons about which tool to use, and the tool calls the existing add, subtract and weather logic. Same building blocks, two ways in: buttons for people, tools for agents.
+
+Code is here if you're curious: https://github.com/srivatsabc/hello-world
+
+Let me know what you think!
+
+Srivatsa

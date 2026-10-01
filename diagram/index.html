@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conventional vs AI: architecture</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #09090b; color: #f4f4f5; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      main { max-width: 1500px; margin: 0 auto; padding: 40px 16px 64px; }
+      header { text-align: center; margin-bottom: 20px; }
+      h1 { margin: 0 0 8px; font-size: 30px; }
+      h1 span { color: #bef264; }
+      header p { margin: 0; font-size: 14px; color: #e4e4e7; }
+      .toggle { display: flex; justify-content: center; gap: 8px; margin: 20px 0; }
+      button { font: inherit; font-size: 14px; font-weight: 500; padding: 6px 12px; border-radius: 8px; border: 1px solid #27272a; background: #18181b; color: #d4d4d8; cursor: pointer; }
+      button.on { background: #a3e635; border-color: #a3e635; color: #09090b; }
+      .card { background: rgba(24, 24, 27, 0.6); border: 1px solid #27272a; border-radius: 16px; padding: 20px; }
+      .diagram { padding: 16px; }
+      svg { width: 100%; height: auto; display: block; font-family: inherit; }
+      #steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 24px; }
+      h2 { margin: 0 0 8px; font-size: 18px; font-weight: 500; }
+      h2.conventional { color: #bef264; }
+      h2.ai { color: #a5b4fc; }
+      ol { margin: 0; padding-left: 20px; font-size: 14px; color: #d4d4d8; line-height: 1.6; }
+      .note { margin-top: 20px; font-size: 13px; color: #a1a1aa; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>How it <span>works</span></h1>
+        <p>Dotted boundaries are the layers. Moving dots are requests going out, small faint dots are responses coming back.</p>
+      </header>
+      <div class="toggle">
+        <button data-mode="all">Both</button>
+        <button data-mode="conventional">Conventional flow</button>
+        <button data-mode="ai">AI flow</button>
+      </div>
+      <div class="card diagram"><svg id="diagram" viewBox="0 0 1700 860" role="img" aria-label="End to end architecture diagram"></svg></div>
+      <div id="steps"></div>
+      <p class="note">Frontend and backend are drawn as two containers to show the microservice boundary. Today both ship in one image on Azure App Service.</p>
+    </main>
+    <script src="icons.js"></script>
+    <script src="diagram.js"></script>
+  </body>
+</html>
