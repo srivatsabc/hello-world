@@ -1,19 +1,22 @@
 import { useState } from 'react'
 import { AiPage } from './pages/AiPage'
+import { ArchitecturePage } from './pages/ArchitecturePage'
 import { ConventionalPage } from './pages/ConventionalPage'
 import { cn } from './lib/cn'
 
-type Section = 'conventional' | 'ai'
+type Section = 'conventional' | 'ai' | 'architecture'
 
 const SECTION_LABELS: Record<Section, string> = {
   conventional: 'Conventional',
   ai: 'AI',
+  architecture: 'Architecture',
 }
 
 // Date: October 1, 2026
 // Name: Sri
-// Desc: Top-level tabs, Conventional (direct API calls) and AI (a LangChain
-//       agent using tools). A plain state switch rather than a router: this
+// Desc: Top-level tabs, Conventional (direct API calls), AI (a LangChain
+//       agent using tools) and Architecture (embeds the separate diagram
+//       service). A plain state switch rather than a router: this
 //       is a small demo and no page needs a shareable URL.
 export default function App() {
   const [section, setSection] = useState<Section>('conventional')
@@ -21,7 +24,7 @@ export default function App() {
   return (
     <div>
       <div className="flex justify-center gap-2 border-b border-zinc-800 bg-zinc-950/80 py-3">
-        {(['conventional', 'ai'] as const).map((s) => (
+        {(['conventional', 'ai', 'architecture'] as const).map((s) => (
           <button
             key={s}
             onClick={() => setSection(s)}
@@ -36,6 +39,7 @@ export default function App() {
       </div>
       {section === 'conventional' && <ConventionalPage />}
       {section === 'ai' && <AiPage />}
+      {section === 'architecture' && <ArchitecturePage />}
     </div>
   )
 }

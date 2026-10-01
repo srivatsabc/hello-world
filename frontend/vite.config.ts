@@ -17,6 +17,11 @@ export default defineConfig({
         target: 'http://localhost:8430',
         changeOrigin: true,
       },
+      '/diagram': {
+        target: 'http://localhost:8440',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/diagram/, ''),
+      },
     },
     watch: {
       usePolling: true,
