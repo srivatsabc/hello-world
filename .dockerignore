@@ -7,4 +7,6 @@
 **/__pycache__
 scripts
 email.txt
-diagram
+diagram/start.sh
+diagram/stop.sh
+diagram/README.md

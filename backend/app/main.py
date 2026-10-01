@@ -13,6 +13,7 @@
 #       and only the API is served.
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -27,7 +28,9 @@ from app.utils.logger import setup_logging
 setup_logging()
 get_settings()
 
-FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+FRONTEND_DIST = REPO_ROOT / "frontend" / "dist"
+DIAGRAM_BACKEND = REPO_ROOT / "diagram" / "backend"
 
 app = FastAPI(title="Hello World: Conventional vs AI")
 
@@ -42,6 +45,16 @@ app.include_router(calc.router, prefix="/api/v1")
 app.include_router(weather.router, prefix="/api/v1")
 app.include_router(agent.router, prefix="/api/v1")
 
+
+# The architecture diagram service (diagram/) normally runs on its own; when
+# its folder is present in the same container it is mounted here under
+# /diagram so the Architecture tab works from one deployment. Mounted before
+# the SPA catch-all below so that route never swallows /diagram.
+if DIAGRAM_BACKEND.exists():
+    sys.path.insert(0, str(DIAGRAM_BACKEND))
+    from diagram_app.main import app as diagram_app  # noqa: E402
+
+    app.mount("/diagram", diagram_app)
 
 if FRONTEND_DIST.exists():
     app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIST / "assets")), name="frontend-assets")

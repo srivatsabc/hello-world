@@ -6,8 +6,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.models.diagram import Diagram
-from app.services import diagram_service
+from diagram_app.models.diagram import Diagram
+from diagram_app.services import diagram_service
 
 router = APIRouter(tags=["diagram"])
 

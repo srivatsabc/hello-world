@@ -9,7 +9,7 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from app.models.diagram import Diagram
+from diagram_app.models.diagram import Diagram
 
 DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "diagram.json"
 

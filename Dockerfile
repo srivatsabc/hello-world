@@ -17,6 +17,9 @@ COPY backend/requirements.txt backend/requirements.txt
 RUN pip install -r backend/requirements.txt
 COPY backend/app backend/app
 COPY --from=frontend-build /repo/frontend/dist frontend/dist
+# The diagram service rides along in the same container, mounted at /diagram.
+COPY diagram/backend diagram/backend
+COPY diagram/frontend diagram/frontend
 WORKDIR /repo/backend
 ENV PYTHONUNBUFFERED=1
 EXPOSE 8430
